@@ -1,9 +1,9 @@
 /**
  * 1. Lintcode-Permutations
- * Given a list of numbers, return all possible permutations. eg:[1, 2, 3]
+ * Given a list of [distinct] numbers, return all possible permutations. eg:[1, 2, 3]
  
  * 2. Lintcode-Permutations II
- * Given a list of numbers, return all possible permutations. eg: [1, 2, 2]
+ * Given a list of numbers(maybe not distinct), return all possible permutations. eg: [1, 2, 2]
  
  * 78. Subsets
  * Given a set of [distinct] integers, nums, return all possible subsets.eg:[1, 2, 3]
@@ -31,6 +31,59 @@
  * possible combinations that add up to a positive integer target
  */
  
+
  public class Solution {
- 
+    /**
+     * Permutation-1: all the numbers are distinct. Check if list contains before add into list
+     */
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(res, new ArrayList<Integer>(), nums);
+        return res;
+    }
+    private void dfs(List<List<Integer>> res, List<Integer> list, int[] nums) {
+        if (list.size() == nums.length) {
+            res.add(new ArrayList<>(list));
+            return;
+        } 
+        for (int i = 0;i < nums.length;i++) {
+            if (list.contains(nums[i])) continue;
+            list.add(nums[i]);
+            dfs(res, list, nums);
+            list.remove(list.size() - 1);
+        }
+    } 
+     
+    /**
+     * Permutation-2: numbers are not unique, but need to make sure lists in res are unique. 
+     *                each nums[i] can only be used once.
+     * [Solution-1] 1.Use Set<List<Integer>> + return new ArrayList<>(res); 
+     *              instead of using List<List<Integer>> to make sure all the sub-lists in res are unique.
+     *              2.boolean[] used, used[i] keep track if nums[i] has been used before, skip used ones.
+     * [Solution-2] 1*. Modify dfs, in for loop, skip the ones which nums[i] == nums[i - 1]. 
+     */
+    // this one is using solution-1
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        Set<List<Integer>> res = new HashSet<>();
+        boolean[] used = new boolean[nums.length];
+        dfs(res, new ArrayList<Integer>(), nums, used);
+        return new ArrayList<>(res);
+    } 
+    
+    private void dfs(Set<List<Integer>> res, List<Integer> list, int[] nums, boolean[] used) {
+        if (list.size() == nums.length) {
+            res.add(new ArrayList<>(list));
+            return;
+        } 
+        for (int i = 0;i < nums.length;i++) {
+            if (used[i]) continue;
+            list.add(nums[i]);
+            used[i] = true;
+            dfs(res, list, nums, used);
+            list.remove(list.size() - 1);
+            used[i] = false;
+            // Solution-2: add this line:
+            // while (i < nums.length && nums[i + 1] == nums[i]) i++;
+        }
+    }
  }
