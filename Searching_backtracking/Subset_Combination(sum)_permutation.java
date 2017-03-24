@@ -35,6 +35,7 @@
  public class Solution {
     /**
      * Permutation-1: all the numbers are distinct. Check if list contains before add into list
+     * Time: O()
      */
     public List<List<Integer>> permute(int[] nums) {
         List<List<Integer>> res = new ArrayList<>();
@@ -66,6 +67,7 @@
     public List<List<Integer>> permuteUnique(int[] nums) {
         Set<List<Integer>> res = new HashSet<>();
         boolean[] used = new boolean[nums.length];
+        // Solution-2: need to sort before. Arrays.sort(nums);
         dfs(res, new ArrayList<Integer>(), nums, used);
         return new ArrayList<>(res);
     } 
@@ -86,4 +88,117 @@
             // while (i < nums.length && nums[i + 1] == nums[i]) i++;
         }
     }
+    
+    /**
+     * 78. Subsets
+     * [Solution]: 1.Well... make sure every subset can be added, 
+     *             so dfs don't need to check before "res.add(new ArrayList<>(list));"
+     *             2. Use curIdx to make sure no duplicates.
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(res, new ArrayList<Integer>(), nums, 0);
+        return res;
+    }
+    // loop start from cur
+    private dfs(List<List<Integer>> res, List<Integer> list, int[] nums, int cur) {
+        res.add(new ArrayList<>(list));        
+        for (int i = cur;i < nums.length;i++) {
+            list.add(nums[i]);
+            dfs(res, list, nums, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+     
+    /**
+     * 90. Subsets II
+     * [Solution]: same as Permutation-2. Use Set / sort + while loop in for
+     */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        if (nums == null) return res;
+        Arrays.sort(nums);
+        dfs(res, new ArrayList<>(), nums, 0);
+        return res;
+    }
+    
+    private void dfs(List<List<Integer>> res, List<Integer> list, int[] nums, int curIdx) {
+        res.add(new ArrayList<>(list));
+        for (int i = curIdx;i < nums.length;i++) {
+            list.add(nums[i]);
+            dfs(res, list, nums, i + 1);
+            list.remove(list.size() - 1);
+            while (i < nums.length - 1 && nums[i] == nums[i + 1]) i++;
+        }
+    }
+    
+    /**
+     * 77. Combinations
+     * [Solution]: Since it should contains all conbinations, if we have [1, 4], don't need [4, 1]
+     *             then can simply use cur as index to prevent going back.
+     */
+    public List<List<Integer>> combine(int n, int k) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(res, new ArrayList<>(), n, k, 1);
+        return res;
+    }
+    private void dfs(List<List<Integer>> res, List<Integer> list, int n, int k, int cur) {
+        if (list.size() == k) {
+            res.add(new ArrayList<>(list));
+            return;
+        }
+        for (int i = cur;i <= n;i++) {  // numbers start from i.
+            list.add(i);
+            dfs(res, list, n, k, i + 1);
+            list.remove(list.size() - 1);
+        }
+    }
+     
+    /**
+     * 39. Combination Sum
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> res = new ArrayList<>();
+        dfs(res, new ArrayList<>(), candidates, target, 0, 0);
+        return res;
+    }
+    private void dfs(List<List<Integer>> res, List<Integer> list, int[] candidates, int target, int cur, int sum) {
+        if (sum == target) {
+            res.add(new ArrayList<>(list));
+            return;
+        } else if (sum > target) {
+            return;
+        }
+        for (int i = cur;i < candidates.length;i++) {
+            list.add(candidates[i]);
+            dfs(res, list, candidates, target, i + 1, sum + candidates[i]);
+            list.remove(list.size() - 1);
+        }
+    } 
+    /**
+     * 40. Combination Sum II/III
+     * Only difference is candidates[] may contain duplicate numbers. 
+     * [Solution]: Same as Permutation-2, sort + while / 
+     */ 
+     
+     /**
+      * 377. Combination Sum IV
+      * Only need to find the number of possible combinations
+      * [Solution]: similar to [climbing stairs], using dp
+      * Time: O(nlogn) + O(target * n).
+      */
+     public int combinationSum4(int[] nums, int target) {
+         int count = 0;
+         Arrays.sort(nums);
+         int[] dp = new int[target + 1];   // dp[i]: # of possible combinations to get sum i 
+         dp[0] = 1;
+         for (int i = 1;i <= target;i++) {
+             for (int num:nums) {
+                if (num > i) break;
+                else if (num == i) dp[i]++;
+                else dp[i] += dp[num - i];
+             }
+         }
+         return dp[target];
+     }
  }
