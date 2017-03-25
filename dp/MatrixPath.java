@@ -26,7 +26,7 @@ public class MatrixPath {
      * [SOLUTION-2]: Save space...Actually every row's condition is only related with previous row.
      *               So can make it O(n).
      * Space: O(2n) -> O(n), Time is always O(mn)
-     *
+     */
     public int uniquePaths(int m, int n) {
         if (m <= 0 || n <= 0) return 0;
         int[][] paths = int[m][n];
@@ -102,5 +102,89 @@ public class MatrixPath {
         return row[n - 1];
     }
     
+    /**
+     * 64. Minimum Path Sum, minimizes the sum of all numbers along its path.
+     * [Solution]: loop line by line, sum[i][j] means min sum of numbers along the path from grid[0][0] -> grid[i][j]
+     *             sum[i][j] = Math.min(sum[i - 1][j], sum[i][j - 1]) + grid[i][j];
+     * TIME: O(mn), space: O(1) if modify grid, O(mn) if not.
+     */
+    public int minPathSum(int[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+        int m = grid.length, n = grid[0].length;
+        int[][] sums = new int[m][n];
+        // 0-th row, 0-th column
+        sums[0][0] = grid[0][0];
+        for (int i = 1;i < n;i++) {
+            sums[0][i] = sums[0][i - 1] + grid[0][i];
+        }
+        for (int i = 1;i < m;i++) {
+            sums[i][0] = sums[i - 1][0] + grid[i][0];
+        }
+        
+        for (int i = 1;i < m;i++) {
+            for (int j = 1;j < n;j++) {
+                sums[i][j] = Math.min(sums[i - 1][j], sums[i][j - 1]) + grid[i][j];
+            }
+        }
+        return sums[m - 1][n - 1];
+    }
     
+    /**
+     * 221. Maximal Square --- find the largest square containing only 1's and return its area.
+     * [SOLUTION]: Similar.. different conditions and different connection with previous state :)
+     *             create size[m][n], and size[i][j] means the maximum length of square at (i, j) till now.
+     *             if (matrix[i][j] == 0), size[i][j] = 0
+     *             else size[i][j] = Math.min(size[i - 1][j - 1], size[i - 1][j], size[i][j - 1]) + 1
+     *                  update maxLen at the same time, keep track of maximum length of square.
+     */
+    public int maximalSquare(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+        int m = matrix.length, n = matrix[0].length;
+        int[][] size = new int[m][n];
+        
+        int maxLen = 0;
+        for (int i = 0;i < m;i++) {
+            size[i][0] = matrix[i][0] - '0';
+            maxLen = Math.max(maxLen, size[i][0]);
+        }
+        for (int i = 0;i < n;i++) {
+            size[0][i] = matrix[0][i] - '0';
+            maxLen = Math.max(maxLen, size[0][i]);
+        }
+        for (int i = 1;i < m;i++) {
+            for (int j = 1;j < n;j++) {
+                if (matrix[i][j] == '0') {
+                    size[i][j] = 0;
+                } else {
+                    size[i][j] = Math.min(size[i - 1][j - 1], Math.min(size[i - 1][j], size[i][j - 1])) + 1;
+                    maxLen = Math.max(maxLen, size[i][j]);
+                }
+            }
+        }
+        return maxLen*maxLen;
+    }
+    // Similar, can use less space, since each line only uses the line just above. O(mn)->O(n)
+    public int maximalSquare(char[][] matrix) {
+        if (matrix == null || matrix.length == 0) return 0;
+        int m = matrix.length, n = matrix[0].length;
+        int[] prevRow = new int[n];
+        int[] curRow = new int[n];
+        int maxLen = 0;
+        for (int i = 0;i < n;i++) {
+            prevRow[i] = matrix[0][i] - '0';
+            maxLen = Math.max(maxLen, prevRow[i]);
+        }
+        for (int i = 1;i < m;i++) {
+            curRow[0] = matrix[i][0] - '0';
+            maxLen = Math.max(maxLen, curRow[0]);
+            for (int j = 1;j < n;j++) {
+                if (matrix[i][j] == '1') {
+                    curRow[j] = Math.min(curRow[j - 1], Math.min(prevRow[j], prevRow[j - 1])) + 1;
+                    maxLen = Math.max(maxLen, curRow[j]);
+                }
+            }
+            prevRow = curRow;
+        }
+        return maxLen * maxLen;
+    }
 }
