@@ -41,8 +41,6 @@ public class Majority {
         }
         return num;
      }
-        return num;
-     }
      
      /**
       * 229. Majority Element II
@@ -50,7 +48,75 @@ public class Majority {
      public List<Integer> majorityElement(int[] nums) {
          List<Integer> res = new ArrayList<>();
          if (nums == null || nums.length == 0) return res;
+         int num1 = 0, num2 = 0;
+         int count1 = 0, count2 = 0;
+         int len = nums.length;
+         for (int i = 0;i < len;i++) {
+            if (num1 == nums[i]) {
+                count1++;
+            } else if (num2 == nums[i]) {
+                count2++;
+            } else if (count1 == 0) {
+                num1 = nums[i];
+                count1++;
+            } else if (count2 == 0) {
+                num2 = nums[i];
+                count2++;
+            } else {
+                count1--;
+                count2--;
+            }
+         }
          
+         count1 = count2 = 0;       // count again and check if num1, num2 are really > len/3
+         for (int num:nums) {
+            if (num == num1) count1++;
+            else if (num == num2) count2++;
+         }
+         if (count1 > len/3) res.add(num1);
+         if (count2 > len/3) res.add(num2);
          return res;
+     }
+    
+     /**
+      * 
+      */
+     public int majorityNumber(ArrayList<Integer> nums, int k) {
+         if (nums == null || nums.size() == 0) return -1;
+         List<Integer> numList = new ArrayList<>();
+         List<Integer> countList = new ArrayList<>();
+         int size = nums.size();
+         for (int i = 0;i < size;i++) {
+             int cur = nums.get(i);
+             if (numList.size() < k - 1 && !numList.contains(cur)) {    // 1. list not full yet
+                 numList.add(cur);
+                 countList.add(1);
+             } else {
+                 int idx = numList.indexOf(cur);
+                 if (idx != -1) {                           // 2. contains nums[i]
+                     countList.set(idx, countList.get(idx) + 1);
+                 } else {                                   // if doesn't contain...
+                     int zeroIdx = countList.indexOf(0);
+                     if (zeroIdx != -1) {                   // 3. if exists integer whose count == 0
+                         numList.remove(zeroIdx);
+                         countList.remove(zeroIdx);
+                         numList.add(cur);
+                         countList.add(1);
+                     } else {                               // 4. all the integer's count > 0, then count-- for all.
+                         for (int j = 0;j < countList.size();j++) {
+                             countList.set(j, countList.get(j) - 1);
+                         }
+                     }
+                 }
+             }
+         }
+         for (int i = 0;i < size;i++) {
+             int count = 0;
+             for (int num:nums) {
+                 if (num == numList.get(i)) count++;
+             }
+             if (count > size / k) return numList.get(i);
+         }
+         return -1;
      }
 }
