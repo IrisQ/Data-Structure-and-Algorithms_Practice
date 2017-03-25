@@ -17,10 +17,11 @@ public class Majority {
      *               Given nums[], size is n, find all elements > [n / k] times.
      *               There are maximum (k-1) integers fit this condition. So keep track of an array/List whose length is (k-1)
      * AND CHECK:    for each nums[i] in nums:
-                        if (List is not full) List.add(nums[i])
-     *                  else if (List contains nums[i]) count[i]++
+                        if (List is not full) List.add(nums[i])     ||  add candidates
+     *                  else if (List contains nums[i]) count[i]++  ||  check if candidate is really majority
      *                  else if (In List, some integer's corresponding count[j] == 0) replace that integer to num[i], set count=1
      *                  else count[m]-- for all elements in count.
+     * Time: O(n)
      */
      
      /**
