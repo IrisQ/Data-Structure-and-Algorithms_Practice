@@ -13,7 +13,16 @@
  * LintCode - Coins in a Line II
  * There are n coins with different value in a line. Two players take turns to take 1 or 2 coins from left until no more coins left. 
  * The player who take the coins with the most value wins. The first player will win/lose?
+ 
+ * 375. Guess Number Higher or Lower II
+ * I pick a number from 1 to n. You have to guess which number I picked.
+ * Every time guess x and x is wrong, I'll tell you whether the number I picked is higher or lower, and you need to pay x.
+ * Given a particular n ≥ 1, find out how much money you need to have to guarantee a win.
+ */
 
+/**
+ * MinMax Algorithm.
+ */
 public class GameTheory {
 
 }
