@@ -6,6 +6,11 @@
  
  * 294. Flip Game II
  * Write a function to determine if the starting player can guarantee a win.
+ 
+ * 464. Can I Win
+ * Given an integer maxChoosableInteger and another integer desiredTotal, 
+ * The player who first causes the running total >= desiredTotal wins, and players cannot re-use integers.
+ * determine if the first player to move can force a win, assuming both players play optimally.
  */
  
 public class FlipGame {
@@ -24,14 +29,58 @@ public class FlipGame {
         return res;
     }
     
-    /**
-     * Similar to Game Theory questions... Minmax
+    /** STILL HAVE BUG, Haven't fixed yet!!!
+     * [Solution]: memorized search, use map to avoid duplicates, 
+     *             and the game itself can be seen as first win/second lose,
+     *             top-down
      */
     public boolean canWin(String s) {
-        if (s.indexOf("++") == -1) return false;
-        
-        return false;
+        Map<String, Boolean> map = new HashMap<>(); // <String, can guarantee win or not>
+        return helper(s, map);
+    }
+    private boolean helper(String s, Map<String, Boolean> map) {
+        if (map.containsKey(s)) return map.get(s);
+        boolean canWin = false;
+        // check all options, if any of them could lead to [guaranteed win], if not, return false
+        char[] chars = s.toCharArray();
+        for (int i = 1;i < s.length();i++) {
+            if (chars[i] == '+' && chars[i - 1] == '+') {
+                chars[i] = chars[i - 1] = '-';
+                boolean cur = canWin(new String(chars));
+                if (!cur) {
+                    canWin = true;
+                    break;
+                }
+                chars[i] = chars[i - 1] = '+';
+            }
+        }
+        map.put(new String(chars), canWin);
+        return canWin;
     }
     
+    /**
+     * [SOLUTION]: 
+     */
+    public boolean canIWin(int maxChoosableInteger, int desiredTotal) {
+        Map<Integer, Boolean> map = new HashMap<>();
+        boolean[] used = new boolean[maxChoosableInteger + 1];
+        return memorizedSearch(maxChoosableInteger, desiredTotal, map, used, 0);
+    }
+    private boolean memorizedSearch(int maxChoosableInteger, int desiredTotal,
+             Map<Integer, Boolean> map, boolean[] used, int curTotal) {
+        if (desiredTotal <= curTotal) return false;
+        if (map.containsKey(curTotal)) return map.get(curTotal);
+        for (int i = 1;i <= maxChoosableInteger;i++) {
+            if (used[i]) continue;  // check every unchosen number
+            used[i] = true;
+            if (!memorizedSearch(maxChoosableInteger, desiredTotal, map, used, curTotal + i)) {
+                map.put(i, true);
+                used[i] = false;
+                return true;
+            }
+            used[i] = false;
+        }
+        
+    }
    
 }
