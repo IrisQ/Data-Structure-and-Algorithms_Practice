@@ -49,7 +49,7 @@ public class GameTheory {
      *      2. take values[i]+values[i+1],
      *          -> other person:
      *                  -> values[i+2]             -> then can only choose from i+3 to end, max can get is dp[i+3]
-     *                  -> values[i+3]+values[i+4] -> then can only choose from i+5 to end, max can get is dp[i+5]
+     *                  -> values[i+2]+values[i+3] -> then can only choose from i+4 to end, max can get is dp[i+4]
      */
     public boolean firstWillWin(int[] values) {
         if (values == null || values.length == 0) return false;
